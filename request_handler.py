@@ -1,7 +1,21 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals
-import json
+from animals import get_all_animals, get_single_animal
+
 class RequestHandler(BaseHTTPRequestHandler):
+
+    def parse_url(self, path):
+        path_params = path.split("/")
+        resource = path_params[1]
+        id = None
+
+        try:
+            id = int(path_params[2])
+        except IndexError:
+            pass
+        except ValueError:
+            pass
+        return(resource, id)
+
     def _set_headers(self, status):
         self.send_response(status)
         self.send_header('Content-type', 'application/json')
@@ -19,17 +33,19 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         self._set_headers(200)
 
-        print(self.path)
+        response = {}
+        (resource, id) = self.parse_url(self.path)
+        print(resource)
+        if resource == "animals":
+            if id is not None:
+                response = f"{get_single_animal(id)}"
+            else:
+                response = f"{get_all_animals()}"
 
-        if self.path == "/animals":
-            response = get_all_animals()
-        else:
-            response = []
-
-        encoded_response = f"{response}".encode()
+        encoded_response = response.encode()
         decoded_response = encoded_response.decode("utf-8").replace("'", '"')
 
-        self.wfile.write(f"{decoded_response}".encode())
+        self.wfile.write(decoded_response.encode())    
 
     def do_POST(self):
         self._set_headers(201)
