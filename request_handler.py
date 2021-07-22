@@ -1,5 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals, get_single_animal
+from locations import get_single_location, get_all_locations
+from employees import get_single_employee, get_all_employees
+from customers import get_single_customer, get_all_customers
 
 class RequestHandler(BaseHTTPRequestHandler):
 
@@ -41,6 +44,24 @@ class RequestHandler(BaseHTTPRequestHandler):
                 response = f"{get_single_animal(id)}"
             else:
                 response = f"{get_all_animals()}"
+
+        if resource == "locations":
+            if id is not None:
+                response = f"{get_single_location(id)}"
+            else:
+                response = f"{get_all_locations()}"
+
+        if resource == "employees":
+            if id is not None:
+                response = f"{get_single_employee(id)}"
+            else:
+                response = f"{get_all_employees()}"
+        
+        if resource == "customers":
+            if id is not None:
+                response = f"{get_single_customer(id)}"
+            else:  
+                response = f"{get_all_customers()}"
 
         encoded_response = response.encode()
         decoded_response = encoded_response.decode("utf-8").replace("'", '"')
